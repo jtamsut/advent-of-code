@@ -1,11 +1,10 @@
 const fs = require('fs')
 let sum = 0
 
-fs.readFile('./day1.txt', 'utf-8', (err, data) => {
-	let xrg = data.length/2
+fs.readFile('./captcha.txt', 'utf-8', (err, data) => {
 
 	for (var i=0; i<data.length; i++) {
-		if (data[i] === data[i + xrg]) {
+		if (data[i] === data[i + 1]) {
 			sum += parseInt(data[i])
 		}	
 	}

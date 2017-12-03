@@ -1,22 +1,17 @@
 const fs = require('fs')
 let sum = 0
 
-fs.readFile('./day1.txt', 'utf-8', (err, data) => {
+fs.readFile('./captcha.txt', 'utf-8', (err, data) => {
+	let [half, end] = [(data.length/2), (data.length-1)];
+	let [firstHalf, secondHalf] = [data.slice(0, half).split(""), data.slice(half, end).split("")];
+	let sum = 0
 	
-	let xrg = data.length/2;
-	let longest = data.length-1;
+	firstHalf.forEach(function(elem, index) {
+		sum = elem === secondHalf[index] ? sum + (2 * elem) : sum
+	});
 
-	for (var i=0; i<data.length; i++) {
-		let next = i + xrg;
-		if (next > longest) {
-			let 
-		} else {
-			if (data[i] === data[i + xrg]) {
-				sum += parseInt(data[i])
-			}	
-		}
-	}
 	console.log(sum)
+
 })
 
 
