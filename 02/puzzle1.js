@@ -5,11 +5,8 @@ fs.readFile('./input.txt', 'utf-8', (err, data) => {
     pz.pop()
     pz.forEach(function(elem, accum=0) {
         let row = elem.split('\t').map(num => parseInt(num))
-        
+
         sum = sum +  (Math.max(...row) - Math.min(...row)) 
     })
     console.log(sum)
 })
-
-const findMax = (arr) => arr.reduce((a, b) => a < b ? b : a)
-const findMin = (arr) => arr.reduce((a, b) => a > b ? b : a)
