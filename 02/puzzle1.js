@@ -1,30 +1,15 @@
 const fs = require('fs')
 
 fs.readFile('./input.txt', 'utf-8', (err, data) => {
-    let pz = data.split('\n')
-    pz.reduce(function(elem, accum=0) {
-        let lt = elem.split('\t')
-        console.log(lt)
+    let [pz, sum] = [data.split('\n'), 0]
+    pz.pop()
+    pz.forEach(function(elem, accum=0) {
+        let row = elem.split('\t').map(num => parseInt(num))
+        
+        sum = sum +  (Math.max(...row) - Math.min(...row)) 
     })
-    
+    console.log(sum)
 })
 
-const findMax = (arr) => { 
-    return arr.reduce((a, b) => {
-        if (a < b) {
-            return b
-        } else {
-            return a
-        }
-    })
-}
-
-const findMin = (arr) => { 
-    return arr.reduce((a, b) => {
-        if (a > b) {
-            return b
-        } else {
-            return a
-        }
-    })
-}
+const findMax = (arr) => arr.reduce((a, b) => a < b ? b : a)
+const findMin = (arr) => arr.reduce((a, b) => a > b ? b : a)
