@@ -19,3 +19,5 @@ function areDuplicates(arr) {
     }
     return false
 }
+
+module.exports = areDuplicates
