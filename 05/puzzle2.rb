@@ -9,8 +9,8 @@ num_offsets = offsets.length
 addr = 0
 
 while addr < num_offsets
-	jmps = offsets[addr]
-	offsets[addr] += 1
+    jmps = offsets[addr]
+    jmps >= 3 ? offsets[addr] -= 1 : offsets[addr] += 1
 	addr += jmps
 	steps += 1
 end
