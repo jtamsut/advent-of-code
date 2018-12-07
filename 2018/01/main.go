@@ -13,23 +13,21 @@ func add(input string) int64 {
 
 func freq(input string) int64 {
 	list := helpers.ParseIntList("./input.txt")
-	frequencyMap := map[int64]bool{0: true}
+	frequencyMap := make(map[int64]bool)
 	var sum int64
 
 	for {
 		for _, num := range list {
 			sum += num
-			_, exist := frequencyMap[sum]
-			fmt.Println(frequencyMap)
-			if exist {
+			if frequencyMap[sum] {
 				return sum
 			}
-			frequencyMap[sum] = struct{}{}
+			frequencyMap[sum] = true
 		}
 	}
 }
 
 func main() {
-	fmt.Printf("Result: %d\n", add("./input.txt"))
-	freq("./input.txt")
+	fmt.Printf("Result for Part 1: %d\n", add("./input.txt"))
+	fmt.Printf("Result for Part 2: %d\n", freq("./input.txt"))
 }
