@@ -1,38 +1,6 @@
-# Advent of Code 2017 Solutions 
+# Advent of Code Solutions 
 
-Here are my solutions to the [Advent of Code 2017](http://adventofcode.com/).
-
-Each day has its own directory and each puzzle has its own file.
-
-These problems are solved in a variety of languages such as Ruby, JavaScript, C++ and Python.
-
-## Progress
-
-- [x] Day 1
-- [x] Day 2
-- [ ] Day 3
-- [x] Day 4
-- [x] Day 5
-- [ ] Day 6
-- [ ] Day 7
-- [ ] Day 8
-- [ ] Day 9
-- [ ] Day 10
-- [ ] Day 11
-- [ ] Day 12
-- [ ] Day 13
-- [ ] Day 14
-- [ ] Day 15
-- [ ] Day 16
-- [ ] Day 17
-- [ ] Day 18
-- [ ] Day 19
-- [ ] Day 20
-- [ ] Day 21
-- [ ] Day 22
-- [ ] Day 23
-- [ ] Day 24
-- [ ] Day 25
+Here are my solutions to the [Advent of Code](http://adventofcode.com/). Each day has its own directory and each puzzle has its own file.
 
 ## Conclusion 
 
