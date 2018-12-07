@@ -2,29 +2,26 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strconv"
-	"strings"
+
+	"github.com/filereader"
+	"github.com/pkg/errors"
 )
 
 func main() {
-	sum := 0
-	num := "xa"
-	str := fileReader("./input.txt")
-	t := strings.Split(str, "\n")
-	t = t[:len(t)-1]
 
-	for _, val := range t {
-		op := string(val[0])
-		if op == "+" {
-			num = strings.Replace(string(val), "+", "", -1)
-			numPlus, _ := strconv.Atoi(num)
-			sum += numPlus
-
-		} else {
-			num = strings.Replace(string(val), "-", "", -1)
-			numMinus, _ := strconv.Atoi(num)
-			sum -= numMinus
-		}
+	vals, err := filereader.BreakOnNewLines("./input.txt")
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "Trouble reading input."))
 	}
-	fmt.Println(sum)
+	var frequency int64
+	for _, line := range vals {
+		parsed, err := strconv.ParseInt(line, 10, 64)
+		if err != nil {
+			log.Fatal(errors.Wrap(err, "Couldn't parse input"))
+		}
+		frequency += parsed
+	}
+	fmt.Printf("Result: %d\n", frequency)
 }
