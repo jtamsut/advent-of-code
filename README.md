@@ -4,6 +4,11 @@ Here are my solutions to the [Advent of Code](http://adventofcode.com/). Each da
 
 Using [these](https://github.com/kindermoumoute/adventofcode) solutions to learn more about Go.
 
+## Reading List 
+
+https://blog.golang.org/strings
+https://blog.golang.org/slices
+
 ## Conclusion 
 
 This is the end of this README. Goodbye!
