@@ -31,8 +31,18 @@ func doubleOrTriple(j map[string]int) (bool, bool) {
 	return i, o
 }
 
+func generateSum(h string) int {
+	sum := 0
+	for _, c := range h {
+		s := string(c)
+		sum += helpers.LettersToNums(s)
+	}
+	return sum
+}
+
 func main() {
 	ids, err := helpers.BreakOnNewLines("./input.txt")
+	var sums []int
 
 	if err != nil {
 		helpers.WrapError(err)
@@ -40,6 +50,8 @@ func main() {
 	twos := 0
 	threes := 0
 	for _, line := range ids {
+		newSum := generateSum(line)
+		sums = append(sums, newSum)
 		w, x := doubleOrTriple(frequencies(line))
 		if w == true {
 			twos += 1
@@ -48,6 +60,6 @@ func main() {
 			threes += 1
 		}
 	}
-
+	fmt.Println(sums)
 	fmt.Printf("Part 1: %d\n", twos*threes)
 }
