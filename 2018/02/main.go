@@ -31,18 +31,58 @@ func doubleOrTriple(j map[string]int) (bool, bool) {
 	return i, o
 }
 
-func generateSum(h string) int {
-	sum := 0
-	for _, c := range h {
-		s := string(c)
-		sum += helpers.LettersToNums(s)
+// Given two strings will return true if only char is different; false otherwise
+func sameExceptOne(f, s string) bool {
+	diff := 0
+	for i, c := range f {
+		iString := string(s[i])
+		cString := string(c)
+
+		if iString != cString {
+			diff++
+		}
+
+		if diff > 1 {
+			return false
+		}
+
 	}
-	return sum
+
+	if diff == 1 {
+		return true
+	}
+
+	return false
+}
+
+func compare() (string, string) {
+	ids, _ := helpers.BreakOnNewLines("./input.txt")
+
+	for _, a := range ids {
+		for _, b := range ids {
+			strA := string(a)
+			strB := string(b)
+
+			if sameExceptOne(strA, strB) {
+				return strA, strB
+			}
+		}
+	}
+	return "None", "None"
+}
+
+func removeNonUniques(a, b string) string {
+	u := ""
+	for i, g := range a {
+		if string(b[i]) == string(g) {
+			u += string(g)
+		}
+	}
+	return u
 }
 
 func main() {
 	ids, err := helpers.BreakOnNewLines("./input.txt")
-	var sums []int
 
 	if err != nil {
 		helpers.WrapError(err)
@@ -50,16 +90,17 @@ func main() {
 	twos := 0
 	threes := 0
 	for _, line := range ids {
-		newSum := generateSum(line)
-		sums = append(sums, newSum)
 		w, x := doubleOrTriple(frequencies(line))
 		if w == true {
-			twos += 1
+			twos++
 		}
 		if x == true {
-			threes += 1
+			threes++
 		}
 	}
-	fmt.Println(sums)
+	l, q := compare()
+	fmt.Println(l)
+	fmt.Println(q)
 	fmt.Printf("Part 1: %d\n", twos*threes)
+	fmt.Printf("Part 2: %s\n", removeNonUniques(l, q))
 }
