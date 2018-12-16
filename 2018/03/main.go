@@ -12,16 +12,18 @@ type box struct {
 
 func parse(s string) []box {
 	lines, err := helpers.BreakOnNewLines(s)
-
-	if err != nil {
-		helpers.WrapError(err)
-	}
-
 	boxes := make([]box, len(lines))
+
+	helpers.WrapError(err)
 
 	for i, line := range lines {
 		var tmpI int
-		fmt.Sscanf(line, "#%d @ %d,%d: %dx%d", &tmpI, &boxes[i].topX, &boxes[i].topY, &boxes[i].width, &boxes[i].height)
+		fmt.Sscanf(line, "#%d @ %d,%d: %dx%d",
+			&tmpI,
+			&boxes[i].topX,
+			&boxes[i].topY,
+			&boxes[i].width,
+			&boxes[i].height)
 	}
 
 	return boxes
@@ -29,7 +31,7 @@ func parse(s string) []box {
 }
 
 func main() {
-	fmt.Println(parse("input.txt"))
+	fmt.Println(parse("input2.txt"))
 }
 
 // func main() {
