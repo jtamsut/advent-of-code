@@ -10,6 +10,35 @@ type box struct {
 	topX, topY, width, height int
 }
 
+func compareTwoPoints(p box, m box) (bool, box) {
+	leftX := helpers.Max(p.topX, m.topX)
+	rightX := helpers.Min(p.topX+p.width, m.topX+m.width)
+	bottomY := helpers.Max(p.topY-p.height, m.topY-m.height)
+	topY := helpers.Min(p.topY, m.topY)
+	var boxWidth, boxHeight int
+
+	if rightX > leftX {
+		boxWidth = rightX - leftX
+	}
+
+	if topY > bottomY {
+		boxHeight = topY - bottomY
+	}
+
+	// return true, empty box if no overlap
+	if boxHeight*boxWidth == 0 {
+		return true, box{}
+	}
+
+	// if overlap, return false and resulting overlapping box
+	return false, box{
+		topX:   leftX,
+		topY:   topY,
+		width:  boxWidth,
+		height: boxHeight,
+	}
+}
+
 func parse(s string) []box {
 	lines, err := helpers.BreakOnNewLines(s)
 	boxes := make([]box, len(lines))
@@ -31,34 +60,12 @@ func parse(s string) []box {
 }
 
 func main() {
-	fmt.Println(parse("input2.txt"))
+	boxes := parse("input.txt")
+	for _, i := range boxes {
+		o, b := compareTwoPoints(i, i)
+		fmt.Println(i)
+		fmt.Println(o)
+		fmt.Println(b)
+		fmt.Println("---")
+	}
 }
-
-// func main() {
-// 	var boxes []Box
-
-// 	for _, x := range line {
-// 		g := strings.Split(x, "@")
-// 		j := strings.Split(g[1], ":")
-// 		i := strings.Split(j[0], ",")
-// 		b := strings.Split(j[1], "x")
-
-// 		tX, _ := strconv.Atoi(i[0])
-// 		tY, _ := strconv.Atoi(i[1])
-// 		wi, _ := strconv.Atoi(b[0])
-// 		he, _ := strconv.Atoi(b[1])
-
-// 		fmt.Println(tX)
-
-// 		z := Box{
-// 			topX:   tX,
-// 			topY:   tY,
-// 			width:  wi,
-// 			height: he,
-// 		}
-
-// 		boxes = append(boxes, z)
-// 	}
-
-// 	// fmt.Println(boxes)
-// }
