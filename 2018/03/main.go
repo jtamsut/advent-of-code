@@ -59,6 +59,12 @@ func parse(s string) []box {
 
 }
 
+// TODO: Write a consolidation algorithm that will take a slice of boxes and simplify them down to the smallest slice possible
+
+func mergeBoxes() {
+	// will return a slice of []box
+}
+
 func main() {
 	boxes := parse("input.txt")
 	for _, i := range boxes {
