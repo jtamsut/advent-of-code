@@ -1,77 +1,48 @@
-package main
+// package main
 
-import (
-	"fmt"
+// import (
+// 	"fmt"
 
-	helpers "github.com/jtamsut/aochelpers"
-)
+// 	helpers "github.com/jtamsut/aochelpers"
+// )
 
-type box struct {
-	topX, topY, width, height int
-}
+// type box struct {
+// 	topX, topY, width, height int
+// }
 
-func compareTwoPoints(p box, m box) (bool, box) {
-	leftX := helpers.Max(p.topX, m.topX)
-	rightX := helpers.Min(p.topX+p.width, m.topX+m.width)
-	bottomY := helpers.Max(p.topY-p.height, m.topY-m.height)
-	topY := helpers.Min(p.topY, m.topY)
-	var boxWidth, boxHeight int
+// func parse(s string) []box {
+// 	lines, err := helpers.BreakOnNewLines(s)
+// 	boxes := make([]box, len(lines))
 
-	if rightX > leftX {
-		boxWidth = rightX - leftX
-	}
+// 	helpers.WrapError(err)
 
-	if topY > bottomY {
-		boxHeight = topY - bottomY
-	}
+// 	for i, line := range l ines {
+// 		var tmpI int
+// 		fmt.Sscanf(line, "#%d @ %d,%d: %dx%d",
+// 			&tmpI,
+// 			&boxes[i].topX,
+// 			&boxes[i].topY,
+// 			&boxes[i].width,
+// 			&boxes[i].height)
+// 	}
 
-	// return true, empty box if no overlap
-	if boxHeight*boxWidth == 0 {
-		return true, box{}
-	}
+// 	return boxes
 
-	// if overlap, return false and resulting overlapping box
-	return false, box{
-		topX:   leftX,
-		topY:   topY,
-		width:  boxWidth,
-		height: boxHeight,
-	}
-}
+// }
 
-func parse(s string) []box {
-	lines, err := helpers.BreakOnNewLines(s)
-	boxes := make([]box, len(lines))
+// // TODO: Write a consolidation algorithm that will take a slice of boxes and simplify them down to the smallest slice possible
 
-	helpers.WrapError(err)
+// func mergeBoxes() {
+// 	// will return a slice of []box
+// }
 
-	for i, line := range lines {
-		var tmpI int
-		fmt.Sscanf(line, "#%d @ %d,%d: %dx%d",
-			&tmpI,
-			&boxes[i].topX,
-			&boxes[i].topY,
-			&boxes[i].width,
-			&boxes[i].height)
-	}
-
-	return boxes
-
-}
-
-// TODO: Write a consolidation algorithm that will take a slice of boxes and simplify them down to the smallest slice possible
-
-func mergeBoxes() {
-	// will return a slice of []box
-}
-
-func main() {
-	boxes := parse("input.txt")
-	for _, i := range boxes {
-		o, b := compareTwoPoints(i, i)
-		fmt.Println(i)
-		fmt.Println(o)
-		fmt.Println(b)
-		fmt.Println("---")
-	}
-}
+// func main() {
+// 	boxes := parse("input.txt")
+// 	for _, i := range boxes {
+// 		o, b := compareTwoPoints(i, i)
+// 		fmt.Println(i)
+// 		fmt.Println(o)
+// 		fmt.Println(b)
+// 		fmt.Println("---")
+// 	}
+// }
