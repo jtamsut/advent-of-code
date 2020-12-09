@@ -6,6 +6,7 @@ class BagContainer
   def initialize(file_path)
     @file_path = file_path
     @tree = {}
+    @valid_bags = 0
   end
 
   def call
@@ -16,16 +17,32 @@ class BagContainer
     end
 
     @tree.values.each do |value|
-      nodes = value[:nodes]
-
-      value[:contain_gold_bag] = true if contain_my_bag?(nodes)
-      find_leaf_nodes(nodes)
+      @valid_bags += 1 if can_bag_contain_my_bag?(value)
     end
+
+    @valid_bags
   end
 
   private
 
-  def contain_my_bag?(nodes)
+  def can_bag_contain_my_bag?(nodes)
+    return true if nodes_contain_gold_bag?(nodes)
+
+    return false if leaf_node?(nodes)
+
+    nodes.any? do |node|
+      curr_tree_nodes = @tree[node[:description]]
+
+      if curr_tree_nodes.nil?
+        puts node
+        raise 'Reached a leaf node'
+      end
+
+      can_bag_contain_my_bag?(curr_tree_nodes)
+    end
+  end
+
+  def nodes_contain_gold_bag?(nodes)
     nodes.each do |node|
       return true if node[:description] == MYBAG
     end
@@ -33,20 +50,24 @@ class BagContainer
     false
   end
 
-  def find_leaf_nodes(nodes)
-    nodes.each do |node|
-      description = node[:description]
+  def leaf_node?(nodes)
+    return false if nodes.length > 1
+    description = nodes.first[:description]
 
-      node[:leaf_node] = true if @tree[description].nil?
+    if description == 'other_bags' || description == 'other_bags.'
+      return true
     end
+
+    false
   end
+
+  ##################################
+  # TREE GENERATION
+  ##################################
 
   def generate_tree
     if @tree[tree_key].nil?
-      @tree[tree_key] = {
-        contain_gold_bag: nil,
-        nodes: tree_nodes
-      }
+      @tree[tree_key] = tree_nodes
     else
       puts 'Bag already exists'
     end
@@ -85,10 +106,9 @@ class BagContainer
   def node(amount:, description:)
     {
       amount: amount,
-      description: description,
-      leaf_node: false
+      description: description
     }
   end
 end
 
-BagContainer.new('./input.txt').call
+puts BagContainer.new('./input.txt').call
