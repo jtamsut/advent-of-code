@@ -1,6 +1,8 @@
 require 'pry'
 
 class BagContainer
+  MYBAG = 'shiny_gold'.freeze
+
   def initialize(file_path)
     @file_path = file_path
     @tree = {}
@@ -12,9 +14,32 @@ class BagContainer
 
       generate_tree
     end
+
+    @tree.values.each do |value|
+      nodes = value[:nodes]
+
+      value[:contain_gold_bag] = true if contain_my_bag?(nodes)
+      find_leaf_nodes(nodes)
+    end
   end
 
   private
+
+  def contain_my_bag?(nodes)
+    nodes.each do |node|
+      return true if node[:description] == MYBAG
+    end
+
+    false
+  end
+
+  def find_leaf_nodes(nodes)
+    nodes.each do |node|
+      description = node[:description]
+
+      node[:leaf_node] = true if @tree[description].nil?
+    end
+  end
 
   def generate_tree
     if @tree[tree_key].nil?
@@ -60,7 +85,8 @@ class BagContainer
   def node(amount:, description:)
     {
       amount: amount,
-      description: description
+      description: description,
+      leaf_node: false
     }
   end
 end
