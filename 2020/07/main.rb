@@ -7,6 +7,7 @@ class BagContainer
     @file_path = file_path
     @tree = {}
     @valid_bags = 0
+    @bags_containing = 0
   end
 
   def call
@@ -20,10 +21,18 @@ class BagContainer
       @valid_bags += 1 if can_bag_contain_my_bag?(value)
     end
 
+    binding.pry
     @valid_bags
   end
 
   private
+
+  def count_bags_in_gold_bags(current_nodes)
+    current_nodes.each do |curr_node|
+
+
+    end
+  end
 
   def can_bag_contain_my_bag?(nodes)
     return true if nodes_contain_gold_bag?(nodes)
@@ -52,11 +61,10 @@ class BagContainer
 
   def leaf_node?(nodes)
     return false if nodes.length > 1
+
     description = nodes.first[:description]
 
-    if description == 'other_bags' || description == 'other_bags.'
-      return true
-    end
+    return true if ['other_bags', 'other_bags.'].include?(description)
 
     false
   end
