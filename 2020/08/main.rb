@@ -6,7 +6,6 @@ require_relative './../utils/file_loader.rb'
 class AssemblyParser < FileLoader
   def initialize(file_path)
     super(file_path)
-    @accumulator = 0
   end
 
   def call
@@ -16,15 +15,18 @@ class AssemblyParser < FileLoader
     each_line { @instructions << instruction }
 
     @instructions.each_with_index do |instruction, index|
-
       if ['jmp', 'nop'].include?(instruction[:op_code])
         cloned_instructions = deep_copy(@instructions)
 
         change_op_code(cloned_instructions, index)
 
-        process_instructions(cloned_instructions)
+        final_counter = process_instructions(cloned_instructions)
 
-        puts "The value of counter is: #{@counter}"
+        if final_counter == 631
+          puts "Counter: #{final_counter}"
+          puts "Accumulator: #{@accumulator}"
+          return
+        end
       end
     end
   end
@@ -52,17 +54,18 @@ class AssemblyParser < FileLoader
 
   def process_instructions(instructions)
     @counter = 0
+    @accumulator = 0
 
-    instruction = instructions[@counter]
-
-    while !instruction[:visited]
-      instruction[:visited] = true
+    while !instructions[@counter].nil? && !instructions[@counter][:visited]
+      instructions[@counter][:visited] = true
 
       send(
-        instruction[:op_code],
-        instruction[:arg]
+        instructions[@counter][:op_code],
+        instructions[@counter][:arg]
       )
     end
+
+    @counter
   end
 
   def instruction
