@@ -21,7 +21,6 @@ class BagContainer
       @valid_bags += 1 if can_bag_contain_my_bag?(value)
     end
 
-    binding.pry
     @valid_bags
   end
 
@@ -29,8 +28,6 @@ class BagContainer
 
   def count_bags_in_gold_bags(current_nodes)
     current_nodes.each do |curr_node|
-
-
     end
   end
 
