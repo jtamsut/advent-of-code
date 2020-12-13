@@ -16,19 +16,16 @@ class AssemblyParser < FileLoader
     each_line { @instructions << instruction }
 
     @instructions.each_with_index do |instruction, index|
-      cloned_instructions = deep_copy(@instructions)
-
-      set_as_not_visited(cloned_instructions)
 
       if ['jmp', 'nop'].include?(instruction[:op_code])
+        cloned_instructions = deep_copy(@instructions)
+
         change_op_code(cloned_instructions, index)
-      else
-        next
+
+        process_instructions(cloned_instructions)
+
+        puts "The value of counter is: #{@counter}"
       end
-
-      process_instructions(cloned_instructions)
-
-      puts "The value of counter is: #{@counter}"
     end
   end
 
@@ -41,7 +38,11 @@ class AssemblyParser < FileLoader
   end
 
   def deep_copy(obj)
-    Marshal.load(Marshal.dump(obj))
+    obj = Marshal.load(Marshal.dump(obj))
+
+    set_as_not_visited(obj)
+
+    obj
   end
 
   def change_op_code(instructions, index)
