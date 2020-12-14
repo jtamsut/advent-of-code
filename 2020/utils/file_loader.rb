@@ -17,4 +17,8 @@ class FileLoader
   def call
     raise 'You must implement call method'
   end
+
+  def deep_copy(obj)
+    Marshal.load(Marshal.dump(obj))
+  end
 end

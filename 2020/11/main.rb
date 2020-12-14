@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'pry'
 
 require_relative './../utils/file_loader.rb'
@@ -9,74 +10,100 @@ class SeatModel < FileLoader
   end
 
   def call
-    @seats = []
-    each_line { @seats << @current_line.split('') }
+    seats = []
 
-    prev_state = -1
-    new_state = 1
-    evolutions = 0
+    each_line { seats << @current_line.split('') }
 
-    while prev_state != new_state
-      evolutions += 1
+    prev_state = run_model(seats)
+    new_state = run_model(prev_state)
 
-      prev_state = @seats.flatten.join('')
-
-      run_model
-
-      new_state = @seats.flatten.join('')
+    while state_change?(prev_state, new_state)
+      prev_state = new_state
+      new_state = run_model(prev_state)
     end
 
-    puts "There are #{prev_state.count('#')} occupied seats."
-    puts "There are #{new_state.count('#')} occupied seats."
-    puts "Number of evolutions: #{evolutions}"
+
+    binding.pry
+
+    puts "There are #{prev_state.flatten.join('').count('#')} occupied seats."
+    puts "There are #{new_state.flatten.join('').count('#')} occupied seats."
   end
 
-  def run_model
-    @seats.each_with_index do |row, row_idx|
-      @row_idx = row_idx
+  private
 
+  def state_change?(prev, new)
+    prev_string = prev.flatten.join('')
+    new_string = new.flatten.join('')
+
+    prev_string != new_string
+  end
+
+  def run_model(seats)
+    seat_copy = seats.clone.map(&:clone)
+    @change = false
+
+    seat_copy.each_with_index do |row, row_idx|
       row.each_with_index do |_, col_idx|
-        @col_idx = col_idx
+        seat = seat_copy[row_idx][col_idx]
 
-        seat = @seats[row_idx][col_idx]
+        adj_seats = num_adj_occupied_seats(
+          curr_seats: seat_copy,
+          row_idx: row_idx,
+          col_idx: col_idx
+        )
 
-        if seat == 'L' && num_adj_occupied_seats.zero?
-          @seats[@row_idx][@col_idx] = '#'
-        elsif seat == '#' && num_adj_occupied_seats >= 4
-          @seats[row_idx][col_idx] = 'L'
+        if seat == 'L' && adj_seats.zero?
+          seat_copy[row_idx][col_idx] = '#'
+          @change = true
+        elsif seat == '#' && adj_seats >= 4
+          seat_copy[row_idx][col_idx] = 'L'
+          @change = true
         end
       end
     end
+
+    unless @change
+      pretty_print(seat_copy)
+    end
+
+    seat_copy
   end
 
-  def num_adj_occupied_seats
-    adjacent_cells.filter do |cell|
+  def num_adj_occupied_seats(curr_seats:, row_idx:, col_idx:)
+    adjacent_cells(curr_seats, row_idx, col_idx).filter do |cell|
       cell == '#'
     end.count
   end
 
-  def  adjacent_cells
+  def pretty_print(seats)
+    seats.each do |row|
+      puts row.join('')
+    end
+  end
+
+  def  adjacent_cells(curr_seats, row_idx, col_idx)
     adjacent = []
-    number_of_rows = @seats.count
-    number_of_cols = @seats.first.count
 
-    if @row_idx + 1 < number_of_rows
-      adjacent << @seats[@row_idx + 1][@col_idx]
-      adjacent << @seats[@row_idx + 1][@col_idx + 1] if @col_idx + 1 < number_of_cols
-      adjacent << @seats[@row_idx + 1][@col_idx - 1] if (@col_idx - 1).positive?
+    number_of_rows = curr_seats.count
+    number_of_cols = curr_seats.first.count
+
+    if (row_idx + 1) < number_of_rows
+      adjacent << curr_seats[row_idx + 1][col_idx]
+      adjacent << curr_seats[row_idx + 1][col_idx + 1] if (col_idx + 1) < number_of_cols
+      adjacent << curr_seats[row_idx + 1][col_idx - 1] if (col_idx - 1) >= 0
     end
 
-    if (@row_idx - 1).positive?
-      adjacent << @seats[@row_idx - 1][@col_idx]
-      adjacent << @seats[@row_idx - 1][@col_idx + 1] if @col_idx + 1 < number_of_cols
-      adjacent << @seats[@row_idx - 1][@col_idx - 1] if (@col_idx - 1).positive?
+    if (row_idx - 1) >= 0
+      adjacent << curr_seats[row_idx - 1][col_idx]
+      adjacent << curr_seats[row_idx - 1][col_idx + 1] if col_idx + 1 < number_of_cols
+      adjacent << curr_seats[row_idx - 1][col_idx - 1] if (col_idx - 1) >= 0
     end
 
-    adjacent << @seats[@row_idx][@col_idx + 1] unless @col_idx + 1 < number_of_cols
-    adjacent << @seats[@row_idx][@col_idx - 1] unless (@col_idx - 1).positive?
+    adjacent << curr_seats[row_idx][col_idx + 1] unless col_idx + 1 < number_of_cols
+    adjacent << curr_seats[row_idx][col_idx - 1] unless (col_idx - 1) >= 0
 
     adjacent
   end
 end
 
-SeatModel.new('./input.txt').call
+SeatModel.new('./input2.txt').call
