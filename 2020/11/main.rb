@@ -5,44 +5,35 @@ require 'pry'
 require_relative './../utils/file_loader.rb'
 
 class SeatModel < FileLoader
+  ROW_WIDTH = 96
+  COL_WIDTH = 98
+
+  attr_reader :seats
+
   def initialize(file_path)
     super(file_path)
+
+    @seats = []
+
+    each_line { @seats << @current_line.split('') }
   end
 
   def call
-    seats = []
+    iterations = 0
 
-    each_line { seats << @current_line.split('') }
-
-    prev_state = run_model(seats)
-    new_state = run_model(prev_state)
-
-    while state_change?(prev_state, new_state)
-      prev_state = new_state
-      new_state = run_model(prev_state)
+    while run_model
+      iterations += 1
     end
 
-
-    binding.pry
-
-    puts "There are #{prev_state.flatten.join('').count('#')} occupied seats."
-    puts "There are #{new_state.flatten.join('').count('#')} occupied seats."
+    puts "Occupied seats: #{@seats.flatten.join('').count('#')}"
+    puts "Iterations: #{iterations}"
   end
 
-  private
+  def run_model
+    no_change = false
+    seat_copy = @seats.clone.map(&:clone)
 
-  def state_change?(prev, new)
-    prev_string = prev.flatten.join('')
-    new_string = new.flatten.join('')
-
-    prev_string != new_string
-  end
-
-  def run_model(seats)
-    seat_copy = seats.clone.map(&:clone)
-    @change = false
-
-    seat_copy.each_with_index do |row, row_idx|
+    @seats.each_with_index do |row, row_idx|
       row.each_with_index do |_, col_idx|
         seat = seat_copy[row_idx][col_idx]
 
@@ -53,57 +44,121 @@ class SeatModel < FileLoader
         )
 
         if seat == 'L' && adj_seats.zero?
-          seat_copy[row_idx][col_idx] = '#'
-          @change = true
-        elsif seat == '#' && adj_seats >= 4
-          seat_copy[row_idx][col_idx] = 'L'
-          @change = true
+          @seats[row_idx][col_idx] = '#'
+          no_change = true
+        elsif seat == '#' && adj_seats >= 5
+          @seats[row_idx][col_idx] = 'L'
+          no_change = true
         end
       end
     end
 
-    unless @change
-      pretty_print(seat_copy)
-    end
-
-    seat_copy
+    no_change
   end
 
   def num_adj_occupied_seats(curr_seats:, row_idx:, col_idx:)
-    adjacent_cells(curr_seats, row_idx, col_idx).filter do |cell|
+    all_visible_seats(seats: curr_seats, row_idx: row_idx, col_idx: col_idx).filter do |cell|
       cell == '#'
     end.count
   end
 
-  def pretty_print(seats)
-    seats.each do |row|
-      puts row.join('')
+  def all_visible_seats(seats:, row_idx:, col_idx:)
+    visible_seats = []
+
+    visible_seats << visible_seats(
+      seats: seats,
+      row_idx: row_idx,
+      col_idx: col_idx
+    ) do
+      @row_idx += 1
+    end
+
+    visible_seats << visible_seats(
+      seats: seats,
+      row_idx: row_idx,
+      col_idx: col_idx
+    ) do
+      @col_idx += 1
+    end
+
+    visible_seats << visible_seats(
+      seats: seats,
+      row_idx: row_idx,
+      col_idx: col_idx
+    ) do
+      @row_idx -= 1
+    end
+
+    visible_seats << visible_seats(
+      seats: seats,
+      row_idx: row_idx,
+      col_idx: col_idx
+    ) do
+      @col_idx -= 1
+    end
+
+    visible_seats << visible_seats(
+      seats: seats,
+      row_idx: row_idx,
+      col_idx: col_idx
+    ) do
+      @row_idx += 1
+      @col_idx -= 1
+    end
+
+    visible_seats << visible_seats(
+      seats: seats,
+      row_idx: row_idx,
+      col_idx: col_idx
+    ) do
+      @row_idx -= 1
+      @col_idx += 1
+    end
+
+    visible_seats << visible_seats(
+      seats: seats,
+      row_idx: row_idx,
+      col_idx: col_idx
+    ) do
+      @row_idx += 1
+      @col_idx += 1
+    end
+
+    visible_seats << visible_seats(
+      seats: seats,
+      row_idx: row_idx,
+      col_idx: col_idx
+    ) do
+      @row_idx -= 1
+      @col_idx -= 1
+    end
+
+    visible_seats.compact
+  end
+
+  def visible_seats(seats:, row_idx:, col_idx:)
+    @row_idx = row_idx
+    @col_idx = col_idx
+
+    yield(@row_idx, @col_idx)
+
+    while in_bounds?(@row_idx, @col_idx)
+      seat = seats[@row_idx][@col_idx]
+
+      return seat if seat != '.'
+
+      yield(@row_idx, @col_idx)
     end
   end
 
-  def  adjacent_cells(curr_seats, row_idx, col_idx)
-    adjacent = []
+  def in_bounds?(row_idx, col_idx)
+    return false if row_idx.negative? || row_idx >= ROW_WIDTH
+    return false if col_idx.negative? || col_idx >= COL_WIDTH
 
-    number_of_rows = curr_seats.count
-    number_of_cols = curr_seats.first.count
-
-    if (row_idx + 1) < number_of_rows
-      adjacent << curr_seats[row_idx + 1][col_idx]
-      adjacent << curr_seats[row_idx + 1][col_idx + 1] if (col_idx + 1) < number_of_cols
-      adjacent << curr_seats[row_idx + 1][col_idx - 1] if (col_idx - 1) >= 0
-    end
-
-    if (row_idx - 1) >= 0
-      adjacent << curr_seats[row_idx - 1][col_idx]
-      adjacent << curr_seats[row_idx - 1][col_idx + 1] if col_idx + 1 < number_of_cols
-      adjacent << curr_seats[row_idx - 1][col_idx - 1] if (col_idx - 1) >= 0
-    end
-
-    adjacent << curr_seats[row_idx][col_idx + 1] unless col_idx + 1 < number_of_cols
-    adjacent << curr_seats[row_idx][col_idx - 1] unless (col_idx - 1) >= 0
-
-    adjacent
+    true
   end
 end
 
-SeatModel.new('./input2.txt').call
+a = SeatModel.new('./input.txt')
+a.call
+puts a.seats.inspect
