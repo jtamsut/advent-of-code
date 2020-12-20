@@ -3,11 +3,9 @@
 require 'pry'
 
 require_relative './../utils/file_loader.rb'
+require_relative './visible_seats.rb'
 
 class SeatModel < FileLoader
-  ROW_WIDTH = 96
-  COL_WIDTH = 98
-
   attr_reader :seats
 
   def initialize(file_path)
@@ -23,7 +21,10 @@ class SeatModel < FileLoader
 
     while run_model
       iterations += 1
+      puts "Number of iterations: #{iterations}"
     end
+
+    run_model
 
     puts "Occupied seats: #{@seats.flatten.join('').count('#')}"
     puts "Iterations: #{iterations}"
@@ -57,108 +58,15 @@ class SeatModel < FileLoader
   end
 
   def num_adj_occupied_seats(curr_seats:, row_idx:, col_idx:)
-    all_visible_seats(seats: curr_seats, row_idx: row_idx, col_idx: col_idx).filter do |cell|
+    VisibleSeats.new(
+      seats: curr_seats,
+      row: row_idx,
+      col: col_idx
+    ).call.filter do |cell|
       cell == '#'
     end.count
   end
-
-  def all_visible_seats(seats:, row_idx:, col_idx:)
-    visible_seats = []
-
-    visible_seats << visible_seats(
-      seats: seats,
-      row_idx: row_idx,
-      col_idx: col_idx
-    ) do
-      @row_idx += 1
-    end
-
-    visible_seats << visible_seats(
-      seats: seats,
-      row_idx: row_idx,
-      col_idx: col_idx
-    ) do
-      @col_idx += 1
-    end
-
-    visible_seats << visible_seats(
-      seats: seats,
-      row_idx: row_idx,
-      col_idx: col_idx
-    ) do
-      @row_idx -= 1
-    end
-
-    visible_seats << visible_seats(
-      seats: seats,
-      row_idx: row_idx,
-      col_idx: col_idx
-    ) do
-      @col_idx -= 1
-    end
-
-    visible_seats << visible_seats(
-      seats: seats,
-      row_idx: row_idx,
-      col_idx: col_idx
-    ) do
-      @row_idx += 1
-      @col_idx -= 1
-    end
-
-    visible_seats << visible_seats(
-      seats: seats,
-      row_idx: row_idx,
-      col_idx: col_idx
-    ) do
-      @row_idx -= 1
-      @col_idx += 1
-    end
-
-    visible_seats << visible_seats(
-      seats: seats,
-      row_idx: row_idx,
-      col_idx: col_idx
-    ) do
-      @row_idx += 1
-      @col_idx += 1
-    end
-
-    visible_seats << visible_seats(
-      seats: seats,
-      row_idx: row_idx,
-      col_idx: col_idx
-    ) do
-      @row_idx -= 1
-      @col_idx -= 1
-    end
-
-    visible_seats.compact
-  end
-
-  def visible_seats(seats:, row_idx:, col_idx:)
-    @row_idx = row_idx
-    @col_idx = col_idx
-
-    yield(@row_idx, @col_idx)
-
-    while in_bounds?(@row_idx, @col_idx)
-      seat = seats[@row_idx][@col_idx]
-
-      return seat if seat != '.'
-
-      yield(@row_idx, @col_idx)
-    end
-  end
-
-  def in_bounds?(row_idx, col_idx)
-    return false if row_idx.negative? || row_idx >= ROW_WIDTH
-    return false if col_idx.negative? || col_idx >= COL_WIDTH
-
-    true
-  end
 end
 
-a = SeatModel.new('./input.txt')
+a = SeatModel.new('./test.txt')
 a.call
-puts a.seats.inspect
