@@ -30,7 +30,7 @@ class Navigator < FileLoader
     left_right = [@directions[:east], @directions[:west]]
     a = up_down.max - up_down.min
     b = left_right.max - left_right.min
-    
+
     puts "Manhattan distance: #{a + b}"
   end
 

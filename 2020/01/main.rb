@@ -6,7 +6,7 @@ NUM_LIST = File
   .map(&:to_i)
 
 def generate_difference
-  NUM_LIST.each_with_index do |num, index|
+  NUM_LIST.each_with_index do |num, index| 
     DIFFERENCE[2020-num] = index
   end
 end
